@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Révision Informatique - Examens A, B, C, D</title>
+    <style>
+        /* CSS pour le style et l'interactivité */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2a6496;
+            border-bottom: 2px solid #2a6496;
+            padding-bottom: 10px;
+        }
+        
+        /* Styles pour la sélection de l'examen */
+        .exam-selection {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #337ab7;
+            border-radius: 8px;
+            background-color: #eaf2f8;
+        }
+        .exam-selection label {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 15px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border: 2px solid transparent;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+        .exam-selection label:hover {
+            background-color: #d4e3f1;
+        }
+        .exam-selection input[type="radio"] {
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        /* Styles pour la section d'identification */
+        .user-info-section {
+            margin-bottom: 30px; 
+            padding: 20px; 
+            border: 1px solid #337ab7; 
+            border-radius: 8px; 
+            background-color: #f0f8ff;
+        }
+        .user-info-section h3 {
+            margin-top: 0;
+            color: #2a6496;
+        }
+        .user-info-field {
+            display: flex; 
+            gap: 20px; 
+            margin-bottom: 15px; 
+            align-items: center;
+        }
+        .user-info-field label {
+            font-weight: bold; 
+            min-width: 150px;
+        }
+        .user-info-field input[type="text"], .user-info-field select {
+            flex-grow: 1; 
+            padding: 8px; 
+            border-radius: 4px; 
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        /* Conteneur des questions à afficher après sélection */
+        #quiz-form-container {
+            display: none; /* Masqué par défaut */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .question-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        /* Styles pour le retour utilisateur après vérification */
+        .question-section.correct {
+            background-color: #dff0d8; /* Vert léger pour succès */
+            border-color: #5cb85c;
+        }
+        .question-section.incorrect {
+            background-color: #f2dede; /* Rouge léger pour échec */
+            border-color: #d9534f;
+        }
+        .question-title {
+            font-weight: bold;
+            color: #2a6496; /* Couleur bleue pour les titres de question */
+            margin-bottom: 15px;
+        }
+        .options label {
+            display: block;
+            margin: 8px 0;
+            cursor: pointer;
+        }
+        /* Mise en évidence des réponses correctes/incorrectes après soumission */
+        .question-section.checked label {
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .question-section.checked input[data-correct="false"]:checked + span,
+        .question-section.checked input[data-correct="false"]:checked + label {
+            background-color: #d9534f; /* Rouge foncé pour sélection incorrecte */
+            color: white;
+            font-weight: bold;
+        }
+        .question-section.checked input[data-correct="true"] + span,
+        .question-section.checked input[data-correct="true"] + label {
+             background-color: #5cb85c; /* Vert pour réponse correcte */
+             color: white;
+             font-weight: bold;
+        }
+        .options input[type="radio"], .options input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        /* Styles pour le Drag and Drop (Texte à trous) */
+        .drag-zone {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .drag-word {
+            background-color: #f0ad4e;
+            color: white;
+            padding: 8px 12px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: grab;
+            font-weight: bold;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s;
+        }
+        .drop-target {
+            display: inline-block;
+            min-width: 120px; 
+            height: 35px;
+            border: 2px dashed #999;
+            border-radius: 5px;
+            margin: 0 5px;
+            text-align: center;
+            line-height: 30px;
+            vertical-align: middle;
+            background-color: #eee;
+        }
+        .drop-target.hover {
+            border-color: #337ab7;
+            background-color: #eaf2f8;
+        }
+        .drop-target.filled {
+            border: none;
+            background-color: transparent;
+            min-width: auto;
+            height: auto;
+            padding: 0;
+            margin: 0;
+            line-height: normal;
+        }
+        .question-text-line {
+            line-height: 40px;
+        }
+        .question-text-line span {
+            margin: 0 5px;
+        }
+        
+        /* Styles pour Matching */
+        .matching-pair {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .matching-pair div.term {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 45%;
+            text-align: center;
+            background-color: #e6e6ff;
+            font-weight: bold;
+        }
+        .definition-select {
+            padding: 8px;
+            width: 50%;
+            border-radius: 4px;
+            border: 1px solid #337ab7;
+            transition: border-color 0.3s;
+        }
+        .matching-pair.correct .definition-select {
+            border-color: #5cb85c;
+            background-color: #dff0d8;
+        }
+        .matching-pair.incorrect .definition-select {
+            border-color: #d9534f;
+            background-color: #f2dede;
+        }
+
+        /* Bouton de soumission final */
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #337ab7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 30px;
+            transition: background-color 0.2s;
+        }
+        .submit-btn:hover {
+            background-color: #286090;
+        }
+        .submit-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #score-container {
+            text-align: center;
+            font-size: 22px;
+            margin-top: 30px;
+            padding: 20px;
+            border: 2px solid #f0ad4e;
+            background-color: #fcf8e3;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📝 Devoir / Examen d'Informatique - Cours 1 à 3 & 5-6</h1>
+
+    <div class="exam-selection">
+        <h2>Sélectionnez votre version d'examen :</h2>
+        <label><input type="radio" name="exam_version" value="A" onclick="startQuiz('A')"> Examen A</label>
+        <label><input type="radio" name="exam_version" value="B" onclick="startQuiz('B')"> Examen B</label>
+        <label><input type="radio" name="exam_version" value="C" onclick="startQuiz('C')"> Examen C</label>
+        <label><input type="radio" name="exam_version" value="D" onclick="startQuiz('D')"> Examen D</label>
+    </div>
+
+    <p id="instruction-text">Veuillez sélectionner une version d'examen (A, B, C ou D) pour commencer. **Chaque version contient 20 questions différentes.**</p>
+
+    <div id="quiz-form-container">
+        <form id="quiz-form">
+
+            <div class="user-info-section">
+                <h3>👤 Informations de l'Élève (Obligatoire)</h3>
+                <div class="user-info-field">
+                    <label for="user-name">Nom et Prénom :</label>
+                    <input type="text" id="user-name" name="user_name" required>
+                </div>
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <div class="user-info-field" style="flex: 1;">
+                        <label for="class-number"> Classe 1ASC- </label>
+                        <select id="class-number" name="class_number" required>
+                            <option value="">Sélectionner</option>
+                        </select>
+                    </div>
+
+                    <div class="user-info-field" style="flex: 1;">
+                        <label for="student-number">N°:</label>
+                        <select id="student-number" name="student_number" required>
+                            <option value="">Sélectionner</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="questions-container">
+                </div>
+
+
+            <button type="button" class="submit-btn" onclick="calculateFinalScore()">Afficher le Score Final et Enregistrer</button>
+
+            <div id="score-container">
+                Score Final : <span id="final-score">0</span> / 20
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+    // --- Définitions des questions pour les 4 versions (A, B, C, D) ---
+    const quizData = {
+        A: [
+            // 1. Définition Information (Glisser-Déposer)
+            { id: 1, type: 'fill-in-the-blank', title: "Question 1/20 : Définition de l'Information (Glisser-Déposer)", 
+              text: "Une information est un [ensemble] de données ayant un [sens].", 
+              words: ["ensemble", "données", "sens"] },
+            // 2. Unité de base (Radio)
+            { id: 2, type: 'radio', title: "Question 2/20 : Quelle est l'unité de base pour mesurer la capacité de stockage des informations (1 caractère) ?", 
+              options: [{text: "Bit", correct: false}, {text: "Octet", correct: true}, {text: "Ko", correct: false}] },
+            // 3. Hardware/Software (Matching)
+            { id: 3, type: 'matching', title: "Question 3/20 : Reliez les termes anglais à leur équivalent français.", 
+              terms: ["Hardware", "Software"], definitions: ["Matériel informatique", "Logiciel"], answers: {"Hardware": "Matériel informatique", "Software": "Logiciel"} },
+            // 4. Source ou Support (Radio)
+            { id: 4, type: 'radio', title: "Question 4/20 : Un livre est principalement un...", 
+              options: [{text: "Support d'information", correct: true}, {text: "Source d'information", correct: false}] },
+            // 5. Classification Périphérique (Checkbox)
+            { id: 5, type: 'checkbox', title: "Question 5/20 : Sélectionnez les périphériques d'entrée.", 
+              options: [{text: "Clavier", correct: true}, {text: "Écran", correct: false}, {text: "Souris", correct: true}, {text: "Imprimante", correct: false}] },
+            // 6. Définition Informatique (Glisser-Déposer)
+            { id: 6, type: 'fill-in-the-blank', title: "Question 6/20 : Définition de l'Informatique (Glisser-Déposer)", 
+              text: "L'informatique est la science du [traitement] [automatique] de l'[information].", 
+              words: ["traitement", "programme", "automatique", "information"] },
+            // 7. Composition Ordinateur (Radio)
+            { id: 7, type: 'radio', title: "Question 7/20 : L'ordinateur est composé de combien de parties principales ?", 
+              options: [{text: "Une (L'Unité Centrale)", correct: false}, {text: "Deux (UC et Périphériques)", correct: true}, {text: "Trois (Matériel, Logiciel, Programmes)", correct: false}] },
+            // 8. Étapes Traitement (Matching)
+            { id: 8, type: 'matching', title: "Question 8/20 : Mettez les étapes du traitement de l'information dans l'ordre (Cours 1).", 
+              terms: ["Étape 1", "Étape 2", "Étape 3"], definitions: ["Lire l'information", "Faire les opérations", "Donner les résultats"], 
+              answers: {"Étape 1": "Lire l'information", "Étape 2": "Faire les opérations", "Étape 3": "Donner les résultats"} },
+            // 9. Périphérique Stockage Rôle (Checkbox)
+            { id: 9, type: 'checkbox', title: "Question 9/20 : Les périphériques de stockage (Clé USB, Disque Dur...) sont aussi des périphériques...", 
+              options: [{text: "d'Entrée", correct: true}, {text: "de Sortie", correct: true}, {text: "de Traitement", correct: false}] },
+            // 10. Vrai/Faux (Matériel/Logiciel)
+            { id: 10, type: 'radio', title: "Question 10/20 : Vrai ou Faux ? Le matériel peut fonctionner tout seul sans les logiciels.", 
+              options: [{text: "Vrai", correct: false}, {text: "Faux", correct: true}] },
+            // 11. Domaines Utilité (Checkbox)
+            { id: 11, type: 'checkbox', title: "Question 11/20 : Dans quels domaines l'informatique est-elle mentionnée comme utile dans le cours ?", 
+              options: [{text: "La médecine", correct: true}, {text: "L'éducation", correct: true}, {text: "Le divertissement", correct: true}, {text: "La cuisine", correct: false}] },
+            // 12. Définition Programme (Glisser-Déposer)
+            { id: 12, type: 'fill-in-the-blank', title: "Question 12/20 : Qu'est-ce qu'un Programme ? (Glisser-Déposer)", 
+              text: "Un programme est une liste d'[instructions] pour dire à l'[ordinateur] ce qu'il doit [exécuter].", 
+              words: ["opérations", "instructions", "ordinateur", "exécuter"] },
+            // 13. Unité Centrale autre nom (Radio)
+            { id: 13, type: 'radio', title: "Question 13/20 : L'Unité Centrale est aussi appelée :", 
+              options: [{text: "Écran", correct: false}, {text: "Boîtier", correct: true}, {text: "Périphérique", correct: false}] },
+            // 14. Définition Traitement (Glisser-Déposer)
+            { id: 14, type: 'fill-in-the-blank', title: "Question 14/20 : Traitement de l'information (Glisser-Déposer)", 
+              text: "Traiter une information, c'est lui appliquer des [opérations] pour obtenir de nouveaux renseignements appelés [résultats].", 
+              words: ["opérations", "analyses", "résultats"] },
+            // 15. Périphériques de Sortie (Checkbox)
+            { id: 15, type: 'checkbox', title: "Question 15/20 : Sélectionnez tous les Périphériques de Sortie listés ci-dessous.", 
+              options: [{text: "Clavier", correct: false}, {text: "Écran", correct: true}, {text: "Souris", correct: false}, {text: "Imprimante", correct: true}, {text: "Haut-parleurs", correct: true}] },
+            // 16. Logiciel de Base vs Application (Matching)
+            { id: 16, type: 'matching', title: "Question 16/20 : Associez le type de logiciel à son exemple (Cours 5-6).", 
+              terms: ["Logiciel de Base", "Logiciel d'Application"], definitions: ["Windows 7", "Ms Word", "Linux"], 
+              answers: {"Logiciel de Base": "Windows 7", "Logiciel d'Application": "Ms Word"} },
+            // 17. Conversion Unité (Radio)
+            { id: 17, type: 'radio', title: "Question 17/20 : Combien d'octets y a-t-il dans 1 Ko ?", 
+              options: [{text: "1000 octets", correct: false}, {text: "1024 octets", correct: true}, {text: "1024 Ko", correct: false}] },
+            // 18. Rôle de la Source (Radio)
+            { id: 18, type: 'radio', title: "Question 18/20 : Une Source d'information est un moyen qui...", 
+              options: [{text: "Garde l'information", correct: false}, {text: "Envoie l'information", correct: true}, {text: "Traite l'information", correct: false}] },
+            // 19. Logiciel (groupe de...) (Radio)
+            { id: 19, type: 'radio', title: "Question 19/20 : Un Logiciel est un groupe de :", 
+              options: [{text: "Ordinateurs", correct: false}, {text: "Périphériques", correct: false}, {text: "Programmes", correct: true}] },
+            // 20. Problème de Stockage (Radio/Calcul)
+            { id: 20, type: 'radio', title: "Question 20/20 : Un périphérique de 64 Mo est-il suffisant pour stocker un dossier de 6500 Ko ?", 
+              options: [{text: " (64*1024 Mo)", correct: true}, {text: " (64*1000 Go)", correct: false}, {text: " (6.4*1224 Mo )", correct: false}] }
+        ],
+        B: [
+            // 1. Définition Informatique (Glisser-Déposer)
+            { id: 1, type: 'fill-in-the-blank', title: "Question 1/20 : Définition de l'Informatique (Glisser-Déposer)", 
+              text: "L'informatique est la science du [traitement] [automatique] de l'[information].", 
+              words: ["traitement", "manuel", "automatique", "information"] },
+            // 2. Plus petite unité (Radio)
+            { id: 2, type: 'radio', title: "Question 2/20 : Quelle est la plus petite unité de données que l'ordinateur peut manipuler ?", 
+              options: [{text: "Bit", correct: true}, {text: "Octet", correct: false}, {text: "Mo", correct: false}] },
+            // 3. Matériel/Logiciel (Matching)
+            { id: 3, type: 'matching', title: "Question 3/20 : Reliez la partie du système informatique à son rôle.", 
+              terms: ["Matériel", "Logiciel"], definitions: ["Corps de l'ordinateur", "Instructions", "Périphériques"], 
+              answers: {"Matériel": "Corps de l'ordinateur", "Logiciel": "Instructions"} },
+            // 4. Source ou Support (Radio)
+            { id: 4, type: 'radio', title: "Question 4/20 : Un journal est...", 
+              options: [{text: "Seulement un Support", correct: false}, {text: "Un Support et une Source", correct: true}, {text: "Seulement une Source", correct: false}] },
+            // 5. Classification Périphérique (Checkbox)
+            { id: 5, type: 'checkbox', title: "Question 5/20 : Sélectionnez les périphériques de sortie.", 
+              options: [{text: "Souris", correct: false}, {text: "Imprimante", correct: true}, {text: "Microphone", correct: false}, {text: "Haut-parleurs", correct: true}] },
+            // 6. Étapes Traitement (Matching)
+            { id: 6, type: 'matching', title: "Question 6/20 : Mettez les étapes du traitement de l'information dans l'ordre (Cours 1).", 
+              terms: ["1ère étape", "2ème étape", "3ème étape"], definitions: ["Faire les opérations", "Lire l'information", "Donner les résultats"], 
+              answers: {"1ère étape": "Lire l'information", "2ème étape": "Faire les opérations", "3ème étape": "Donner les résultats"} },
+            // 7. Vrai/Faux (Ordinateur)
+            { id: 7, type: 'radio', title: "Question 7/20 : Vrai ou Faux ? Un ordinateur est constitué uniquement de périphériques.", 
+              options: [{text: "Vrai", correct: false}, {text: "Faux", correct: true}] },
+            // 8. Rôle du Logiciel de base (Radio)
+            { id: 8, type: 'radio', title: "Question 8/20 : Le rôle d'un Logiciel de base (Système d'exploitation) est de...", 
+              options: [{text: "Réaliser des tâches particulières (Dessin, Calcul)", correct: false}, {text: "Assurer le bon fonctionnement de l'ordinateur", correct: true}, {text: "Stocker les données", correct: false}] },
+            // 9. Intrus Information (Radio)
+            { id: 9, type: 'radio', title: "Question 9/20 : Trouvez l'intrus (Le mot qui n'est PAS un synonyme/équivalent de l'Information).", 
+              options: [{text: "Nouvelle", correct: false}, {text: "Cheval", correct: true}, {text: "Renseignement", correct: false}] },
+            // 10. Vrai/Faux (Logiciel nécessaire)
+            { id: 10, type: 'radio', title: "Question 10/20 : Vrai ou Faux ? Les logiciels ne peuvent rien faire s'ils n'ont pas de matériel pour les exécuter.", 
+              options: [{text: "Vrai", correct: true}, {text: "Faux", correct: false}] },
+            // 11. Conversion Unité (Matching)
+            { id: 11, type: 'matching', title: "Question 11/20 : Reliez l'unité à sa valeur correcte.", 
+              terms: ["1 Mégaoctet (Mo)", "1 Gigaoctet (Go)"], definitions: ["1024 Ko", "1024 Mo", "1024 Octets"], 
+              answers: {"1 Mégaoctet (Mo)": "1024 Ko", "1 Gigaoctet (Go)": "1024 Mo"} },
+            // 12. Définition Traitement (Glisser-Déposer)
+            { id: 12, type: 'fill-in-the-blank', title: "Question 12/20 : Traitement de l'information (Glisser-Déposer)", 
+              text: "Traiter une information, c'est lui appliquer des [opérations] pour obtenir de nouveaux renseignements appelés [résultats].", 
+              words: ["opérations", "analyses", "résultats"] },
+            // 13. Périphériques de Stockage (Checkbox)
+            { id: 13, type: 'checkbox', title: "Question 13/20 : Sélectionnez les périphériques qui SONT des périphériques de stockage.", 
+              options: [{text: "CD-ROM", correct: true}, {text: "Scanner", correct: false}, {text: "Clé USB", correct: true}, {text: "Disque dur", correct: true}] },
+            // 14. Définition Programme (Glisser-Déposer)
+            { id: 14, type: 'fill-in-the-blank', title: "Question 14/20 : Qu'est-ce qu'un Programme ? (Glisser-Déposer)", 
+              text: "Un programme est une liste d'[instructions] pour dire à l'[ordinateur] ce qu'il doit [exécuter].", 
+              words: ["opérations", "instructions", "ordinateur", "exécuter"] },
+            // 15. Périphérique qui fait les deux (Radio)
+            { id: 15, type: 'radio', title: "Question 15/20 : Quel périphérique est un périphérique d'entrée ET de sortie ?", 
+              options: [{text: "L'écran", correct: false}, {text: "Le clavier", correct: false}, {text: "Le Disque Dur", correct: true}] },
+            // 16. Nom Logiciel de Base (Radio)
+            { id: 16, type: 'radio', title: "Question 16/20 : Un logiciel de base est aussi appelé :", 
+              options: [{text: "Logiciel d'Application", correct: false}, {text: "Système d'Exploitation", correct: true}, {text: "Programme", correct: false}] },
+            // 17. Fonction Moniteur (Matching)
+            { id: 17, type: 'matching', title: "Question 17/20 : Reliez le périphérique à sa fonction.", 
+              terms: ["Moniteur (Écran)", "Scanner", "Microphone"], definitions: ["Permet l'affichage des informations", "Permet de numériser des documents", "Permet d'enregistrer le son"], 
+              answers: {"Moniteur (Écran)": "Permet l'affichage des informations", "Scanner": "Permet de numériser des documents", "Microphone": "Permet d'enregistrer le son"} },
+            // 18. Rôle du Support (Radio)
+            { id: 18, type: 'radio', title: "Question 18/20 : Un Support d'information est une 'boîte' qui...", 
+              options: [{text: "Envoie l'information", correct: false}, {text: "Garde l'information", correct: true}, {text: "Fait des calculs", correct: false}] },
+            // 19. Problème de Stockage 2 (Radio/Calcul)
+            { id: 19, type: 'radio', title: "Question 19/20 : Combien de Ko sont nécessaires pour stocker un fichier de 1 Mo ?", 
+              options: [{text: "1000 Ko", correct: false}, {text: "1024 Ko", correct: true}, {text: "1024 Mo", correct: false}] },
+            // 20. UC autre nom (Radio)
+            { id: 20, type: 'radio', title: "Question 20/20 : L'Unité Centrale est responsable du...", 
+              options: [{text: "Stockage des données", correct: false}, {text: "Traitement de l'information", correct: true}, {text: "Affichage des résultats", correct: false}] }
+        ],
+        C: [
+             // 1. Unité de base (Radio)
+            { id: 1, type: 'radio', title: "Question 1/20 : Quelle unité sert à stocker un seul caractère (lettre, chiffre) ?", 
+              options: [{text: "Bit", correct: false}, {text: "Octet", correct: true}, {text: "Ko", correct: false}] },
+            // 2. Définition Information (Glisser-Déposer)
+            { id: 2, type: 'fill-in-the-blank', title: "Question 2/20 : Définition de l'Information (Glisser-Déposer)", 
+              text: "L'information est un [ensemble] de [données] ayant du [sens].", 
+              words: ["ensemble", "données", "chiffres", "sens"] },
+            // 3. Logiciel de Base vs Application (Matching)
+            { id: 3, type: 'matching', title: "Question 3/20 : Associez le type de logiciel à sa description.", 
+              terms: ["Logiciel de Base", "Logiciel d'Application"], definitions: ["Assure le bon fonctionnement de l'ordinateur", "Permet de réaliser des tâches particulières (Ex: Word)"], 
+              answers: {"Logiciel de Base": "Assure le bon fonctionnement de l'ordinateur", "Logiciel d'Application": "Permet de réaliser des tâches particulières (Ex: Word)"} },
+            // 4. Classification Périphérique (Checkbox)
+            { id: 4, type: 'checkbox', title: "Question 4/20 : Sélectionnez les périphériques d'entrée.", 
+              options: [{text: "Écran", correct: false}, {text: "Clavier", correct: true}, {text: "Imprimante", correct: false}, {text: "Microphone", correct: true}] },
+            // 5. Unité Centrale autre nom (Radio)
+            { id: 5, type: 'radio', title: "Question 5/20 : L'Unité Centrale est le 'cerveau' de l'ordinateur, aussi appelé :", 
+              options: [{text: "Périphérique", correct: false}, {text: "Logiciel", correct: false}, {text: "Boîtier", correct: true}] },
+            // 6. Domaine d'Utilité (Radio)
+            { id: 6, type: 'radio', title: "Question 6/20 : Parmi les domaines suivants, lequel est mentionné dans le cours comme une utilité de l'informatique ?", 
+              options: [{text: "La Menuiserie", correct: false}, {text: "Le Divertissement", correct: true}, {text: "L'Agriculture", correct: false}] },
+            // 7. Vrai/Faux (Système Informatique)
+            { id: 7, type: 'radio', title: "Question 7/20 : Vrai ou Faux ? Un système informatique est un ensemble d'ordinateurs (Matériel uniquement).", 
+              options: [{text: "Vrai", correct: false}, {text: "Faux", correct: true}] },
+            // 8. Étapes Traitement (Matching)
+            { id: 8, type: 'matching', title: "Question 8/20 : Reliez l'action à son étape dans le traitement de l'information.", 
+              terms: ["Lire l'information", "Faire les opérations", "Donner les résultats"], definitions: ["Première étape", "Deuxième étape", "Troisième étape"], 
+              answers: {"Lire l'information": "Première étape", "Faire les opérations": "Deuxième étape", "Donner les résultats": "Troisième étape"} },
+            // 9. Rôle du Traitement (Glisser-Déposer)
+            { id: 9, type: 'fill-in-the-blank', title: "Question 9/20 : Rôle du Traitement (Glisser-Déposer)", 
+              text: "Traiter l'information signifie obtenir de nouveaux renseignements appelés [résultats] en appliquant des [opérations].", 
+              words: ["analyses", "résultats", "données", "opérations"] },
+            // 10. Vrai/Faux (DD Stockage)
+            { id: 10, type: 'radio', title: "Question 10/20 : Vrai ou Faux ? Le disque dur est un périphérique de stockage.", 
+              options: [{text: "Vrai", correct: true}, {text: "Faux", correct: false}] },
+            // 11. Fonction Souris/Clavier (Matching)
+            { id: 11, type: 'matching', title: "Question 11/20 : Reliez le périphérique à sa fonction.", 
+              terms: ["La souris", "Le clavier"], definitions: ["Saisir des lettres et des chiffres", "Sélectionner et manipuler des objets"], 
+              answers: {"La souris": "Sélectionner et manipuler des objets", "Le clavier": "Saisir des lettres et des chiffres"} },
+            // 12. Périphérique Entrée/Sortie (Checkbox)
+            { id: 12, type: 'checkbox', title: "Question 12/20 : Parmi les périphériques suivants, quels sont ceux de **Sortie** ?", 
+              options: [{text: "Écran", correct: true}, {text: "Souris", correct: false}, {text: "Haut-parleurs", correct: true}, {text: "Scanner", correct: false}] },
+            // 13. Définition Programme (Radio)
+            { id: 13, type: 'radio', title: "Question 13/20 : Un Programme est :", 
+              options: [{text: "Une liste de périphériques", correct: false}, {text: "Un groupe de logiciels", correct: false}, {text: "Une liste d'instructions pour l'ordinateur", correct: true}] },
+            // 14. Support ou Source (Radio)
+            { id: 14, type: 'radio', title: "Question 14/20 : La télévision est principalement une...", 
+              options: [{text: "Source d'information", correct: true}, {text: "Support d'information", correct: false}, {text: "Unité centrale", correct: false}] },
+            // 15. Vocabulaire Anglais (Matching)
+            { id: 15, type: 'matching', title: "Question 15/20 : Reliez les termes français à leur équivalent anglais.", 
+              terms: ["Matériel informatique", "Logiciel"], definitions: ["Software", "Hardware"], 
+              answers: {"Matériel informatique": "Hardware", "Logiciel": "Software"} },
+            // 16. Nom Logiciel de Base (Radio)
+            { id: 16, type: 'radio', title: "Question 16/20 : Windows 7 est un exemple de :", 
+              options: [{text: "Logiciel d'Application", correct: false}, {text: "Logiciel de Base", correct: true}, {text: "Programme", correct: false}] },
+            // 17. Conversion Unité (Radio)
+            { id: 17, type: 'radio', title: "Question 17/20 : 1 Go est égal à :", 
+              options: [{text: "1024 Ko", correct: false}, {text: "1024 Mo", correct: true}, {text: "1024 Octets", correct: false}] },
+            // 18. Définition Informatique (Glisser-Déposer)
+            { id: 18, type: 'fill-in-the-blank', title: "Question 18/20 : L'informatique vient des mots :", 
+              text: "L'informatique vient des mots [information] et [automatique].", 
+              words: ["information", "automatique", "traitement"] },
+            // 19. Vrai/Faux (Débrancher Périphérique)
+            { id: 19, type: 'radio', title: "Question 19/20 : Vrai ou Faux ? Pour débrancher des périphériques plus anciennes(sauf USB), il est conseillé d'éteindre l'ordinateur.", 
+              options: [{text: "Vrai", correct: true}, {text: "Faux", correct: false}] },
+            // 20. Problème de Stockage (Radio/Calcul)
+            { id: 20, type: 'radio', title: "Question 20/20 : La capacité d'un périphérique de stockage est 64 Mo. Peut-il stocker un dossier de 6500 Ko ?", 
+              options: [{text: "car 6500 Ko = 6.3 Mo environ.", correct: true}, {text: "car 6500 Ko est plus grand que 64 Mo.", correct: false}] }
+        ],
+        D: [
+             // 1. Définition Programme (Glisser-Déposer)
+            { id: 1, type: 'fill-in-the-blank', title: "Question 1/20 : Qu'est-ce qu'un Programme ? (Glisser-Déposer)", 
+              text: "Un programme est une liste d'[instructions] pour dire à l'[ordinateur] ce qu'il doit [exécuter].", 
+              words: ["opérations", "instructions", "ordinateur", "exécuter"] },
+            // 2. Hardware/Software (Matching)
+            { id: 2, type: 'matching', title: "Question 2/20 : Reliez les termes anglais à leur équivalent français.", 
+              terms: ["Logiciel", "Matériel informatique"], definitions: ["Hardware", "Software"], answers: {"Logiciel": "Software", "Matériel informatique": "Hardware"} },
+            // 3. Unité de base (Radio)
+            { id: 3, type: 'radio', title: "Question 3/20 : La capacité de stockage d'un périphérique est mesurée en...", 
+              options: [{text: "Octets", correct: true}, {text: "Bits", correct: false}, {text: "Caractères", correct: false}] },
+            // 4. Source ou Support (Radio)
+            { id: 4, type: 'radio', title: "Question 4/20 : La télévision donne des informations mais ne les garde pas. C'est principalement une...", 
+              options: [{text: "Source", correct: true}, {text: "Support", correct: false}, {text: "Unité Centrale", correct: false}] },
+            // 5. Vrai/Faux (Unité Centrale)
+            { id: 5, type: 'radio', title: "Question 5/20 : Vrai ou Faux ? Un ordinateur ne peut pas fonctionner sans unité centrale.", 
+              options: [{text: "Vrai", correct: true}, {text: "Faux", correct: false}] },
+            // 6. Classification Périphérique (Checkbox)
+            { id: 6, type: 'checkbox', title: "Question 6/20 : Sélectionnez les périphériques qui facilitent l'entrée d'informations (Périphériques d'Entrée).", 
+              options: [{text: "Clavier", correct: true}, {text: "Écran", correct: false}, {text: "Souris", correct: true}, {text: "Imprimante", correct: false}, {text: "Microphone", correct: true}] },
+            // 7. Définition Informatique (Glisser-Déposer)
+            { id: 7, type: 'fill-in-the-blank', title: "Question 7/20 : Définition de l'Informatique (Glisser-Déposer)", 
+              text: "L'informatique est une science qui regarde comment les machines peuvent traiter [automatiquement] l'[information].", 
+              words: ["manuellement", "automatiquement", "information"] },
+            // 8. Étapes Traitement (Matching)
+            { id: 8, type: 'matching', title: "Question 8/20 : Reliez l'action à son étape dans le traitement de l'information.", 
+              terms: ["Étape 1", "Étape 2", "Étape 3"], definitions: ["Faire les opérations", "Donner les résultats", "Lire l'information"], 
+              answers: {"Étape 1": "Lire l'information", "Étape 2": "Faire les opérations", "Étape 3": "Donner les résultats"} },
+            // 9. Logiciel (groupe de...) (Radio)
+            { id: 9, type: 'radio', title: "Question 9/20 : Un Logiciel est un groupe de...", 
+              options: [{text: "Programmes", correct: true}, {text: "Périphériques", correct: false}, {text: "Unités Centrales", correct: false}] },
+            // 10. Vrai/Faux (Matériel/Logiciel)
+            { id: 10, type: 'radio', title: "Question 10/20 : Vrai ou Faux ? Le matériel doit être géré par un système d'exploitation pour fonctionner correctement.", 
+              options: [{text: "Vrai", correct: true}, {text: "Faux", correct: false}] },
+            // 11. Fonction Imprimante/Haut-parleurs (Matching)
+            { id: 11, type: 'matching', title: "Question 11/20 : Reliez le périphérique de Sortie à sa fonction.", 
+              terms: ["Imprimante", "Haut-parleurs"], definitions: ["Permet d'imprimer les informations sur papier", "Permet la transmission du son"], 
+              answers: {"Imprimante": "Permet d'imprimer les informations sur papier", "Haut-parleurs": "Permet la transmission du son"} },
+            // 12. Périphérique Stockage Rôle (Checkbox)
+            { id: 12, type: 'checkbox', title: "Question 12/20 : Les périphériques de stockage servent à la fois à :", 
+              options: [{text: "Entrer les informations", correct: true}, {text: "Traiter les informations", correct: false}, {text: "Sortir les informations", correct: true}] },
+            // 13. Définition Information (Glisser-Déposer)
+            { id: 13, type: 'fill-in-the-blank', title: "Question 13/20 : Définition de l'Information (Glisser-Déposer)", 
+              text: "L'information nous donne des renseignements sous forme de [texte], d'[image] ou de [son].", 
+              words: ["texte", "couleur", "image", "son"] },
+            // 14. Intrus Information (Radio)
+            { id: 14, type: 'radio', title: "Question 14/20 : Trouvez l'intrus (Le seul qui est lié à l'Information).", 
+              options: [{text: "Cheval", correct: false}, {text: "Nouvelle", correct: true}, {text: "Arbre", correct: false}] },
+            // 15. Logiciel de Base vs Application (Matching)
+            { id: 15, type: 'matching', title: "Question 15/20 : Associez l'exemple de logiciel à son type.", 
+              terms: ["Ms Excel", "Linux"], definitions: ["Logiciel d'Application", "Logiciel de Base"], 
+              answers: {"Ms Excel": "Logiciel d'Application", "Linux": "Logiciel de Base"} },
+            // 16. Conversion Unité (Radio)
+            { id: 16, type: 'radio', title: "Question 16/20 : 1 Mo est égal à :", 
+              options: [{text: "1024 Octets", correct: false}, {text: "1024 Ko", correct: true}, {text: "1024 Go", correct: false}] },
+            // 17. Partie principale de l'ordinateur (Radio)
+            { id: 17, type: 'radio', title: "Question 17/20 : Les Périphériques sont...", 
+              options: [{text: "Des dispositifs externes connectés à l'UC", correct: true}, {text: "Le cerveau de l'ordinateur", correct: false}, {text: "Le logiciel de base", correct: false}] },
+            // 18. Rôle du Traitement (Radio)
+            { id: 18, type: 'radio', title: "Question 18/20 : L'action de **traiter** l'information implique :", 
+              options: [{text: "Uniquement lire l'information", correct: false}, {text: "Faire des opérations (calculs, classement)", correct: true}, {text: "Uniquement stocker les résultats", correct: false}] },
+            // 19. Domaine d'Utilité (Checkbox)
+            { id: 19, type: 'checkbox', title: "Question 19/20 : L'informatique rend les choses plus faciles et rapides dans quels domaines ?", 
+              options: [{text: "La Médecine", correct: true}, {text: "L'Éducation", correct: true}, {text: "La Maçonnerie", correct: false}] },
+            // 20. Définition Programme (Radio)
+            { id: 20, type: 'radio', title: "Question 20/20 : Qu'est-ce que le **Software** ?", 
+              options: [{text: "L'unité centrale", correct: false}, {text: "Le corps de l'ordinateur", correct: false}, {text: "Les instructions (Logiciel)", correct: true}] }
+        ]
+    };
+    
+    // Global state
+    let finalScore = 0;
+    let dragged = null;
+    let isQuizCompleted = false;
+    let currentExamVersion = null; 
+    let currentQuestions = [];
+
+    // --- Fonctions de base et utilitaires ---
+
+    // Remplissage des listes déroulantes pour l'identification
+    function populateSelects() {
+        const classSelect = document.getElementById('class-number');
+        const studentSelect = document.getElementById('student-number');
+
+        for (let i = 1; i <= 25; i++) {
+            classSelect.innerHTML += `<option value="${i}">${i}</option>`;
+        }
+        for (let i = 1; i <= 50; i++) {
+            studentSelect.innerHTML += `<option value="${i}">${i}</option>`;
+        }
+    }
+    document.addEventListener('DOMContentLoaded', populateSelects);
+
+    // Normalisation du texte pour la comparaison des réponses
+    function normalizeText(text) {
+        return text.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
+    }
+
+
+    // --- Logique de Rendu des Questions ---
+
+    /**
+     * Génère l'HTML pour les questions dynamiquement.
+     */
+    function renderQuestions(questions) {
+        const container = document.getElementById('questions-container');
+        container.innerHTML = '';
+        currentQuestions = questions;
+
+        questions.forEach((q, index) => {
+            let html = '';
+            const qNum = index + 1;
+            const qName = `q${qNum}`; // Nom unique pour les inputs
+
+            if (q.type === 'radio' || q.type === 'checkbox') {
+                html = '<div class="options">';
+                q.options.forEach((opt) => {
+                    const checkedState = q.type === 'checkbox' && opt.correct ? 'data-correct="true"' : `data-correct="${opt.correct}"`;
+                    html += `<label><input type="${q.type}" name="${qName}" value="${opt.text}" ${checkedState}> <span>${opt.text}</span></label>`;
+                });
+                html += '</div>';
+
+            } else if (q.type === 'fill-in-the-blank') {
+                // Rendu des mots à glisser
+                html += '<div class="drag-zone" id="drag-q' + qNum + '">';
+                // Mélanger les mots pour éviter la ressemblance avec la version précédente
+                const shuffledWords = q.words.sort(() => Math.random() - 0.5); 
+                shuffledWords.forEach(word => {
+                    html += `<div class="drag-word" draggable="true" data-word="${word}">${word}</div>`;
+                });
+                html += '</div>';
+
+                // Rendu de la phrase avec les zones de dépôt
+                let text = q.text;
+                // Remplacer les [mot] par la zone de dépôt, en conservant le mot correct pour la vérification
+                q.words.forEach(word => {
+                    // Vérifier si le mot est attendu comme réponse
+                    if (q.text.includes(`[${word}]`)) {
+                         const dropTargetHtml = `<span class="drop-target" data-correct-word="${word}"></span>`;
+                         text = text.replace(`[${word}]`, dropTargetHtml);
+                    }
+                });
+
+                html += `<p class="question-text-line">${text}</p>`;
+
+            } else if (q.type === 'matching') {
+                html += '<div id="q' + qNum + '-matching">';
+                
+                // Créer la liste des définitions pour la liste déroulante (mélangées)
+                const allDefinitions = q.definitions.slice().sort(() => Math.random() - 0.5);
+
+                q.terms.forEach(term => {
+                    let selectOptions = `<option value="">Sélectionner</option>`;
+                    allDefinitions.forEach(def => {
+                        selectOptions += `<option value="${def}">${def}</option>`;
+                    });
+
+                    html += `
+                        <div class="matching-pair" data-term="${term}">
+                            <div class="term">${term}</div>
+                            <select class="definition-select" name="${qName}-${term}" data-term-target="${term}">
+                                ${selectOptions}
+                            </select>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            // Assemblage de la question complète
+            const questionHtml = `
+                <div class="question-section" data-id="${qNum}" data-type="${q.type}">
+                    <div class="question-title">${q.title}</div>
+                    ${html}
+                </div>
+            `;
+            container.innerHTML += questionHtml;
+        });
+
+        // Réactiver le Drag and Drop après l'injection HTML
+        initDragAndDrop();
+    }
+
+
+    /**
+     * Démarre le quiz en chargeant les questions de la version sélectionnée.
+     */
+    function startQuiz(version) {
+        if (isQuizCompleted && version === currentExamVersion) return; 
+
+        currentExamVersion = version;
+        const questions = quizData[version];
+        
+        document.getElementById('instruction-text').style.display = 'none';
+        
+        // Rendre les questions
+        renderQuestions(questions);
+
+        // Afficher le formulaire avec une transition
+        const quizContainer = document.getElementById('quiz-form-container');
+        quizContainer.style.display = 'block';
+        setTimeout(() => quizContainer.style.opacity = '1', 10);
+        
+        // Réinitialiser le score et le bouton
+        isQuizCompleted = false;
+        document.getElementById('final-score').textContent = 0;
+        const finalSubmitBtn = document.querySelector('.submit-btn');
+        finalSubmitBtn.textContent = `Afficher le Score Final et Enregistrer`;
+        finalSubmitBtn.disabled = false;
+        document.querySelectorAll('.question-section').forEach(section => {
+            section.classList.remove('correct', 'incorrect', 'checked');
+        });
+    }
+    
+    // --- Logique de vérification pour une seule question ---
+    function checkQuestion(qId) {
+        const section = document.querySelector(`.question-section[data-id="${qId}"]`);
+        const type = section.getAttribute('data-type');
+        const questionData = currentQuestions[qId - 1];
+        let score = 0;
+
+        // Désactiver toutes les entrées de la section
+        section.querySelectorAll('input, select, .drag-word').forEach(el => {
+            if (el.tagName === 'DIV' && el.classList.contains('drag-word')) {
+                el.draggable = false;
+            } else if (el.tagName !== 'BUTTON') {
+                el.disabled = true;
+            }
+        });
+        
+        section.classList.add('checked');
+
+        if (type === 'fill-in-the-blank') {
+            const dropTargets = section.querySelectorAll('.drop-target');
+            let currentCorrect = 0;
+            let totalWords = 0;
+
+            dropTargets.forEach((target) => {
+                const filledWordElement = target.querySelector('.drag-word');
+                const correctWord = normalizeText(target.getAttribute('data-correct-word'));
+                totalWords++;
+                
+                if (filledWordElement) {
+                    const filledWord = normalizeText(filledWordElement.getAttribute('data-word'));
+                    if (filledWord === correctWord) {
+                        currentCorrect++;
+                        filledWordElement.style.backgroundColor = '#5cb85c'; // Vert
+                    } else {
+                        filledWordElement.style.backgroundColor = '#d9534f'; // Rouge
+                    }
+                }
+            });
+            score = (currentCorrect === totalWords) ? 1 : 0;
+
+        } else if (type === 'radio') {
+            const selectedInput = section.querySelector(`input[name="q${qId}"]:checked`);
+            const correctAnswer = questionData.options.find(opt => opt.correct)?.text;
+
+            if (selectedInput && normalizeText(selectedInput.value) === normalizeText(correctAnswer)) {
+                score = 1;
+            }
+
+        } else if (type === 'checkbox') {
+            const correctOptions = questionData.options.filter(opt => opt.correct).map(opt => normalizeText(opt.text)).sort();
+            const selectedOptions = Array.from(section.querySelectorAll(`input[name="q${qId}"]:checked`))
+                .map(input => normalizeText(input.value)).sort();
+            
+            const isCorrect = correctOptions.length === selectedOptions.length && 
+                              correctOptions.every((val, index) => val === selectedOptions[index]);
+
+            score = isCorrect ? 1 : 0;
+
+        } else if (type === 'matching') {
+            let currentCorrect = 0;
+            const totalMappings = questionData.terms.length;
+            
+            questionData.terms.forEach(term => {
+                const select = section.querySelector(`[data-term-target="${term}"]`);
+                const correctDef = questionData.answers[term];
+                const pair = section.querySelector(`.matching-pair[data-term="${term}"]`);
+
+                if (select) {
+                    if (select.value === correctDef) {
+                        currentCorrect++;
+                        pair.classList.add('correct');
+                    } else {
+                        pair.classList.add('incorrect');
+                    }
+                }
+            });
+            score = (currentCorrect === totalMappings) ? 1 : 0;
+        }
+
+        // Colorer la section de la question
+        if (score === 1) {
+            section.classList.add('correct');
+        } else {
+            section.classList.add('incorrect');
+        }
+        return score;
+    }
+    
+    // --- Fonction de sauvegarde du fichier texte (téléchargement client-side) ---
+    function saveResultToFile(content, userName, examVersion) {
+        // Nettoyer le nom pour le nom de fichier
+        const cleanName = userName.replace(/[^a-zA-Z0-9\s]/g, '').trim().replace(/\s+/g, '_');
+        const fileName = `Resultats_${cleanName}_Examen${examVersion}.txt`;
+        
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        alert(`Le score a été enregistré dans le fichier: "${fileName}"`);
+    }
+
+    // --- Fonction de calcul du score final ---
+    function calculateFinalScore() {
+        if (isQuizCompleted) return;
+        if (!currentExamVersion) {
+            alert("Veuillez sélectionner une version d'examen (A, B, C ou D) pour continuer.");
+            return;
+        }
+        
+        // 1. Validation des champs obligatoires
+        const userName = document.getElementById('user-name').value.trim();
+        const classNumber = document.getElementById('class-number').value;
+        const studentNumber = document.getElementById('student-number').value;
+        
+        if (!userName || !classNumber || !studentNumber) {
+            alert("Veuillez remplir toutes les informations de l'élève (Nom, Classe, et Numéro d'Utilisateur) avant de soumettre.");
+            return;
+        }
+        
+        // Confirmation avant la soumission
+        if (!confirm(`Êtes-vous certain de vouloir terminer l'examen ${currentExamVersion} (20 questions) et afficher votre score final ?`)) {
+            return;
+        }
+
+        finalScore = 0; 
+        const totalQuestions = currentQuestions.length;
+
+        // Boucle sur toutes les questions pour calculer le score
+        for (let qId = 1; qId <= totalQuestions; qId++) {
+            finalScore += checkQuestion(qId);
+        }
+        
+        // Mettre à jour l'affichage du score
+        document.getElementById('final-score').textContent = finalScore;
+
+        // --- Préparation et sauvegarde du fichier ---
+        const fileContent = `
+--- RÉSULTATS EXAMEN INFORMATIQUE ---
+
+Date de Soumission: ${new Date().toLocaleString('fr-FR')}
+Version d'Examen: ${currentExamVersion}
+
+INFORMATIONS DE L'ÉLÈVE:
+Nom et Prénom: ${userName}
+Classe 1ASC- ${classNumber}
+N° d'élève: ${studentNumber}
+
+SCORE FINAL: ${finalScore} / ${totalQuestions}
+---
+`;
+        saveResultToFile(fileContent, userName, currentExamVersion);
+        
+        // Désactiver le bouton de soumission
+        const finalSubmitBtn = document.querySelector('.submit-btn');
+        finalSubmitBtn.textContent = `Score Calculé pour l'Examen ${currentExamVersion} : ${finalScore} / ${totalQuestions}`;
+        finalSubmitBtn.disabled = true;
+        
+        isQuizCompleted = true; // Marquer le quiz comme terminé
+    }
+    
+    // --- Fonctions de Drag and Drop (Glisser-Déposer) ---
+    function initDragAndDrop() {
+        // Supprimer les anciens écouteurs pour éviter les doubles exécutions
+        document.querySelectorAll('.drag-word').forEach(word => {
+            word.removeEventListener('dragstart', handleDragStart);
+            word.removeEventListener('dragend', handleDragEnd); 
+        });
+        document.querySelectorAll('.drop-target, .drag-zone').forEach(el => {
+            el.removeEventListener('dragover', handleDragOver);
+            el.removeEventListener('dragleave', handleDragLeave);
+            el.removeEventListener('drop', handleDrop);
+        });
+
+        // Ajouter les nouveaux écouteurs
+        document.querySelectorAll('.drag-word').forEach(word => {
+            word.addEventListener('dragstart', handleDragStart);
+            word.addEventListener('dragend', handleDragEnd); 
+        });
+
+        document.querySelectorAll('.drop-target, .drag-zone').forEach(el => {
+            el.addEventListener('dragover', handleDragOver);
+            el.addEventListener('dragleave', handleDragLeave);
+            el.addEventListener('drop', handleDrop);
+        });
+    }
+
+    function handleDragStart(e) {
+        if (isQuizCompleted || e.target.draggable === false) {
+             e.preventDefault();
+             return;
+        }
+        dragged = e.target;
+        e.dataTransfer.setData('text/plain', e.target.getAttribute('data-word'));
+        setTimeout(() => e.target.style.opacity = '0.5', 0);
+    }
+
+    function handleDragOver(e) {
+        if (isQuizCompleted) return;
+        e.preventDefault();
+        const isDropTarget = e.target.classList.contains('drop-target');
+        const isDragZone = e.target.classList.contains('drag-zone');
+        
+        // Autoriser le dépôt si:
+        // 1. C'est une zone de dépôt ET elle est vide.
+        // 2. C'est la zone des mots à glisser.
+        if ((isDropTarget && !e.target.querySelector('.drag-word')) || isDragZone) {
+            e.target.classList.add('hover');
+        }
+    }
+
+    function handleDragLeave(e) {
+        if (e.target.classList.contains('drop-target') || e.target.classList.contains('drag-zone')) {
+            e.target.classList.remove('hover');
+        }
+    }
+    
+    function handleDragEnd(e) {
+        e.target.style.opacity = '1';
+    }
+
+    function handleDrop(e) {
+        if (isQuizCompleted) return;
+        e.preventDefault();
+        const dropTarget = e.target;
+        const currentDragged = dragged;
+
+        if (!currentDragged) return;
+
+        // 1. Déposer sur une cible vide (.drop-target)
+        if (dropTarget.classList.contains('drop-target') && !dropTarget.querySelector('.drag-word')) {
+            const formerParent = currentDragged.parentElement;
+            if (formerParent && formerParent.classList.contains('drop-target')) {
+                formerParent.classList.remove('filled');
+            }
+            
+            dropTarget.classList.remove('hover');
+            dropTarget.classList.add('filled');
+            dropTarget.appendChild(currentDragged);
+
+        // 2. Déposer sur la zone de mots à glisser (.drag-zone)
+        } else if (dropTarget.classList.contains('drag-zone')) {
+            const formerParent = currentDragged.parentElement;
+            dropTarget.appendChild(currentDragged);
+
+            if (formerParent && formerParent.classList.contains('drop-target')) {
+                formerParent.classList.remove('filled');
+            }
+        // 3. Déposer sur un mot (pour l'échanger)
+        } else if (dropTarget.classList.contains('drag-word')) {
+            const targetParent = dropTarget.parentElement;
+            const formerParent = currentDragged.parentElement;
+            
+            // Échanger les mots seulement si les deux sont dans des cibles
+            if (targetParent.classList.contains('drop-target') && formerParent.classList.contains('drop-target')) {
+                 targetParent.appendChild(currentDragged);
+                 formerParent.appendChild(dropTarget);
+            }
+            dropTarget.classList.remove('hover'); 
+            
+        } else {
+             // Si on lâche le mot ailleurs (par exemple sur le texte de la question), le remettre dans son parent initial
+            if (currentDragged.style.opacity === '0.5' && currentDragged.parentElement) {
+                // Rien à faire ici, handleDragEnd le gère
+            }
+        }
+        dragged = null;
+    }
+
+</script>
+
+</body>
+</html>

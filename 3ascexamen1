@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen Réseaux - Unité 1 : Typologie et Matériel</title>
+    <style>
+        /* CSS pour le style et l'interactivité */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e6f7ff; /* Bleu très clair, thème Réseau */
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 30px auto 0px; 
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        h1 {
+            text-align: center;
+            color: #007bff; /* Bleu vif pour les réseaux */
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        
+        /* Styles de la section d'inscription */
+        #registration-section {
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 2px solid #28a745; 
+            border-radius: 8px;
+            background-color: #e9f7ee;
+            text-align: center;
+        }
+        #registration-section input, #registration-section select {
+            padding: 10px;
+            margin: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .start-btn {
+            display: block;
+            width: 80%;
+            max-width: 400px;
+            margin: 20px auto 0;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .start-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Styles de l'examen */
+        #quiz-form {
+            display: none; /* Reste caché jusqu'à l'inscription */
+        }
+        .question-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .question-title {
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+        .options label {
+            display: block;
+            margin: 8px 0;
+            cursor: pointer;
+        }
+        .options input[type="radio"], .options input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        /* Styles pour le Drag and Drop (Texte à trous) */
+        .drag-zone {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .drag-word {
+            background-color: #ffc107; /* Jaune pour les mots clés */
+            color: #333;
+            padding: 8px 12px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: grab;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+        }
+        .drop-target {
+            display: inline-block;
+            width: 120px;
+            height: 35px;
+            border: 2px dashed #999;
+            border-radius: 5px;
+            margin: 0 5px;
+            text-align: center;
+            line-height: 30px;
+            vertical-align: middle;
+            background-color: #eee;
+        }
+        .drop-target.hover {
+            border-color: #28a745;
+            background-color: #eafbe9;
+        }
+        .drop-target.filled {
+            border: none;
+            background-color: transparent;
+            width: auto;
+            height: auto;
+            padding: 0;
+            margin: 0;
+        }
+        .question-text-line {
+            line-height: 40px;
+        }
+        .question-text-line span {
+            margin: 0 5px;
+        }
+        
+        /* Styles pour Matching */
+        .matching-pair {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .matching-pair div.term {
+            padding: 8px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            width: 45%;
+            text-align: center;
+            background-color: #f0f8ff; /* Bleu pâle */
+            font-weight: bold;
+        }
+        .definition-select {
+            padding: 8px;
+            width: 50%;
+            border-radius: 4px;
+            border: 1px solid #007bff;
+        }
+
+        /* Bouton de soumission unique */
+        .submit-all-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #28a745; /* Vert pour Terminer */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 30px;
+            transition: background-color 0.2s;
+        }
+        .submit-all-btn:hover {
+            background-color: #1e7e34;
+        }
+        
+        /* Conteneur de score et résultat */
+        #score-container {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 30px;
+            padding: 15px;
+            border: 2px solid #007bff;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            display: none; /* Caché par défaut */
+        }
+        .result-detail {
+            margin-top: 15px;
+            text-align: left;
+            padding: 10px;
+            border-top: 1px dashed #ccc;
+        }
+        .correct-answer-highlight {
+            background-color: #dff0d8;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-weight: normal;
+        }
+        .incorrect-answer-highlight {
+            background-color: #f8d7da;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-weight: normal;
+        }
+
+        /* Style pour le footer */
+        .footer-note {
+            text-align: center;
+            max-width: 900px;
+            margin: 10px auto 30px;
+            padding: 15px;
+            font-size: 14px;
+            color: #777;
+            border-top: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🌐 Examen - Typologie, Équipements et Administration Réseau</h1>
+
+    <div id="registration-section">
+        <h2>Informations de l'élève</h2>
+        <p>Veuillez entrer vos informations pour commencer l'examen.</p>
+        
+        <input type="text" id="student-name" placeholder="Nom et Prénom de l'élève" value="" size="30" />
+        
+        <label for="student-number">N° Élève :</label>
+        <select id="student-number">
+            <script>
+                // Générer les options de 1 à 50
+                for (let i = 1; i <= 50; i++) {
+                    document.write(`<option value="${i}">${i}</option>`);
+                }
+            </script>
+        </select>
+
+        <label for="class-number">Classe :3ASC-</label>
+        <select id="class-number">
+            <script>
+                // Générer les options de 1 à 20
+                for (let i = 1; i <= 20; i++) {
+                    document.write(`<option value="${i}">${i}</option>`);
+                }
+            </script>
+        </select>
+        
+        <button type="button" class="start-btn" onclick="startQuiz()">Commencer l'examen</button>
+        <p style="font-size: small; color: red; margin-top: 10px;">
+            **IMPORTANT :** Le fichier de résultat final (Nom, Classe, Numéro, **SCORE**) sera **automatiquement** téléchargé au moment de la soumission de l'examen.
+        </p>
+    </div>
+
+    <form id="quiz-form" onsubmit="event.preventDefault(); submitQuiz();">
+
+        <div class="question-section" data-id="1" data-type="radio" data-answer="Échanger des données et partager des ressources">
+            <div class="question-title">Question 1/20 : Quel est l'objectif principal d'un Réseau Informatique ?</div>
+            <div class="options">
+                <label><input type="radio" name="q1" value="Stocker toutes les données sur un seul serveur central"> Stocker toutes les données sur un seul serveur central.</label>
+                <label><input type="radio" name="q1" value="Échanger des données et partager des ressources"> Échanger des données et partager des ressources (imprimantes, fichiers).</label>
+                <label><input type="radio" name="q1" value="Traiter l'information sans intervention humaine"> Traiter l'information sans intervention humaine.</label>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="2" data-type="matching" data-answer="LAN-Local Area Network,MAN-Metropolitan Area Network,WAN-Wide Area Network">
+            <div class="question-title">Question 2/20 : Reliez l'acronyme à sa signification complète.</div>
+            <div id="q2-matching">
+                <div class="matching-pair"><div class="term" data-term="LAN">LAN</div><select class="definition-select" data-term-target="LAN"><option value="">Sélectionner</option><option value="Local Area Network">Local Area Network</option><option value="Wide Area Network">Wide Area Network</option><option value="Metropolitan Area Network">Metropolitan Area Network</option></select></div>
+                <div class="matching-pair"><div class="term" data-term="MAN">MAN</div><select class="definition-select" data-term-target="MAN"><option value="">Sélectionner</option><option value="Local Area Network">Local Area Network</option><option value="Wide Area Network">Wide Area Network</option><option value="Metropolitan Area Network">Metropolitan Area Network</option></select></div>
+                <div class="matching-pair"><div class="term" data-term="WAN">WAN</div><select class="definition-select" data-term-target="WAN"><option value="">Sélectionner</option><option value="Local Area Network">Local Area Network</option><option value="Wide Area Network">Wide Area Network</option><option value="Metropolitan Area Network">Metropolitan Area Network</option></select></div>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="3" data-type="radio" data-answer="En étoile">
+            <div class="question-title">Question 3/20 : Quelle topologie relie tous les postes à un équipement central (Hub) ?</div>
+            <div class="options">
+                <label><input type="radio" name="q3" value="En bus"> En bus</label>
+                <label><input type="radio" name="q3" value="En anneau"> En anneau</label>
+                <label><input type="radio" name="q3" value="En étoile"> En étoile</label>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="4" data-type="checkbox" data-answer="Partager les ressources,Échanger les informations">
+            <div class="question-title">Question 4/20 : Quels sont les avantages d'un Réseau Local (LAN) ? (Cochez les deux bonnes réponses)</div>
+            <div class="options">
+                <label><input type="checkbox" name="q4" value="Partager les ressources"> Partager les ressources (imprimante, disque dur).</label>
+                <label><input type="checkbox" name="q4" value="Échanger les informations"> Échanger les informations (fichiers, messagerie).</label>
+                <label><input type="checkbox" name="q4" value="Couvrir un pays ou un continent"> Couvrir un pays ou un continent.</label>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="5" data-type="radio" data-answer="MAN">
+            <div class="question-title">Question 5/20 : Quel type de réseau couvre une ville ou une grande zone urbaine en reliant plusieurs LAN ?</div>
+            <div class="options">
+                <label><input type="radio" name="q5" value="LAN"> LAN</label>
+                <label><input type="radio" name="q5" value="MAN"> MAN</label>
+                <label><input type="radio" name="q5" value="WAN"> WAN</label>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="6" data-type="radio" data-answer="Transformer le signal Internet du FAI (analogique) en signal numérique">
+            <div class="question-title">Question 6/20 : Quel est le rôle principal du Modem ?</div>
+            <div class="options">
+                <label><input type="radio" name="q6" value="Créer le réseau Wi-Fi pour la maison"> Créer le réseau Wi-Fi pour la maison.</label>
+                <label><input type="radio" name="q6" value="Partager la connexion entre plusieurs appareils"> Partager la connexion entre plusieurs appareils.</label>
+                <label><input type="radio" name="q6" value="Transformer le signal Internet du FAI (analogique) en signal numérique"> Transformer le signal Internet du FAI (analogique) en signal numérique utilisable par l'ordinateur.</label>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="7" data-type="matching" data-answer="Modem-Traduit le signal FAI,Routeur-Partage la connexion entre appareils,Carte Réseau-Connecte l'ordinateur au réseau">
+            <div class="question-title">Question 7/20 : Reliez l'équipement à sa fonction.</div>
+            <div id="q7-matching">
+                <div class="matching-pair"><div class="term" data-term="Modem">Modem</div><select class="definition-select" data-term-target="Modem"><option value="">Sélectionner</option><option value="Traduit le signal FAI">Traduit le signal FAI</option><option value="Partage la connexion entre appareils">Partage la connexion entre appareils</option><option value="Connecte l'ordinateur au réseau">Connecte l'ordinateur au réseau</option></select></div>
+                <div class="matching-pair"><div class="term" data-term="Routeur">Routeur</div><select class="definition-select" data-term-target="Routeur"><option value="">Sélectionner</option><option value="Traduit le signal FAI">Traduit le signal FAI</option><option value="Partage la connexion entre appareils">Partage la connexion entre appareils</option><option value="Connecte l'ordinateur au réseau">Connecte l'ordinateur au réseau</option></select></div>
+                <div class="matching-pair"><div class="term" data-term="Carte Réseau">Carte Réseau</div><select class="definition-select" data-term-target="Carte Réseau"><option value="">Sélectionner</option><option value="Traduit le signal FAI">Traduit le signal FAI</option><option value="Partage la connexion entre appareils">Partage la connexion entre appareils</option><option value="Connecte l'ordinateur au réseau">Connecte l'ordinateur au réseau</option></select></div>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="8" data-type="radio" data-answer="Faux">
+            <div class="question-title">Question 8/20 : Vrai ou Faux ? Un Modem seul peut connecter plusieurs appareils à Internet simultanément.</div>
+            <div class="options">
+                <label><input type="radio" name="q8" value="Vrai"> Vrai</label>
+                <label><input type="radio" name="q8" value="Faux"> Faux</label>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="9" data-type="fill-in-the-blank" data-answer="étendu,pays,fibre optique,longues">
+            <div class="question-title">Question 9/20 : Complétez la définition du WAN (Glisser-Déposer).</div>
+            <div class="drag-zone" id="drag-q9">
+                <div class="drag-word" draggable="true" data-word="étendu">étendu</div>
+                <div class="drag-word" draggable="true" data-word="courtes">courtes</div>
+                <div class="drag-word" draggable="true" data-word="pays">pays</div>
+                <div class="drag-word" draggable="true" data-word="longues">longues</div>
+                <div class="drag-word" draggable="true" data-word="câble coaxial">câble coaxial</div>
+                <div class="drag-word" draggable="true" data-word="fibre optique">fibre optique</div>
+            </div>
+            <p class="question-text-line">Le réseau WAN est un réseau 
+                <span class="drop-target" data-correct-word="étendu"></span> couvrant un 
+                <span class="drop-target" data-correct-word="pays"></span> ou un continent, il utilise des liaisons à grande vitesse comme la 
+                <span class="drop-target" data-correct-word="fibre optique"></span> pour échanger des informations sur de 
+                <span class="drop-target" data-correct-word="longues"></span> distances.
+            </p>
+        </div>
+
+        <div class="question-section" data-id="10" data-type="radio" data-answer="Stockage et utilisation d’applications en ligne">
+            <div class="question-title">Question 10/20 : Que permet le "Cloud computing" dans l'évolution récente des réseaux ?</div>
+            <div class="options">
+                <label><input type="radio" name="q10" value="Créer un réseau local sans fil"> Créer un réseau local sans fil.</label>
+                <label><input type="radio" name="q10" value="Stockage et utilisation d’applications en ligne"> Stockage et utilisation d’applications en ligne (Google Drive, OneDrive).</label>
+                <label><input type="radio" name="q10" value="Accéder à Internet par satellite uniquement"> Accéder à Internet par satellite uniquement.</label>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="11" data-type="radio" data-answer="Switch (Hub)">
+            <div class="question-title">Question 11/20 : Dans un LAN filaire, quel équipement est obligatoire pour relier **trois** ordinateurs ou plus ?</div>
+            <div class="options">
+                <label><input type="radio" name="q11" value="Modem"> Modem</label>
+                <label><input type="radio" name="q11" value="Routeur"> Routeur</label>
+                <label><input type="radio" name="q11" value="Switch (Hub)"> Switch (Hub)</label>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="12" data-type="radio" data-answer="La carte réseau">
+            <div class="question-title">Question 12/20 : Quel composant matériel permet de connecter physiquement un ordinateur à un réseau informatique ?</div>
+            <div class="options">
+                <label><input type="radio" name="q12" value="Le disque dur"> Le disque dur</label>
+                <label><input type="radio" name="q12" value="La carte mère"> La carte mère</label>
+                <label><input type="radio" name="q12" value="La carte réseau"> La carte réseau</label>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="13" data-type="radio" data-answer="En bus">
+            <div class="question-title">Question 13/20 : Quelle topologie est la plus sensible à la rupture du câble principal (backbone) ?</div>
+            <div class="options">
+                <label><input type="radio" name="q13" value="En anneau"> En anneau</label>
+                <label><input type="radio" name="q13" value="En bus"> En bus</label>
+                <label><input type="radio" name="q13" value="En étoile"> En étoile</label>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="14" data-type="checkbox" data-answer="Imprimante,Disque/Fichiers,Connexion Internet">
+            <div class="question-title">Question 14/20 : Parmi les propositions suivantes, quelles sont des ressources typiquement partagées sur un LAN ? (Cochez toutes les bonnes réponses)</div>
+            <div class="options">
+                <label><input type="checkbox" name="q14" value="Clavier et Souris"> Clavier et Souris</label>
+                <label><input type="checkbox" name="q14" value="Imprimante"> Imprimante</label>
+                <label><input type="checkbox" name="q14" value="Disque/Fichiers"> Disque/Fichiers</label>
+                <label><input type="checkbox" name="q14" value="Connexion Internet"> Connexion Internet</label>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="15" data-type="radio" data-answer="Administrateur">
+            <div class="question-title">Question 15/20 : Quel type de compte utilisateur a le pouvoir d'Installer des programmes et de Créer ou Modifier d'autres comptes ?</div>
+            <div class="options">
+                <label><input type="radio" name="q15" value="Limité"> Limité</label>
+                <label><input type="radio" name="q15" value="Administrateur"> Administrateur</label>
+                <label><input type="radio" name="q15" value="Invité"> Invité</label>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="16" data-type="matching" data-answer="Administrateur-Installer des programmes,Limité-Utilisateur standard,Invité-N’a aucun mot de passe">
+            <div class="question-title">Question 16/20 : Associez chaque type de compte à sa description.</div>
+            <div id="q16-matching">
+                <div class="matching-pair"><div class="term" data-term="Administrateur">Administrateur</div><select class="definition-select" data-term-target="Administrateur"><option value="">Sélectionner</option><option value="N’a aucun mot de passe">N’a aucun mot de passe</option><option value="Installer des programmes">Installer des programmes</option><option value="Utilisateur standard">Utilisateur standard</option></select></div>
+                <div class="matching-pair"><div class="term" data-term="Limité">Limité</div><select class="definition-select" data-term-target="Limité"><option value="">Sélectionner</option><option value="N’a aucun mot de passe">N’a aucun mot de passe</option><option value="Installer des programmes">Installer des programmes</option><option value="Utilisateur standard">Utilisateur standard</option></select></div>
+                <div class="matching-pair"><div class="term" data-term="Invité">Invité</div><select class="definition-select" data-term-target="Invité"><option value="">Sélectionner</option><option value="N’a aucun mot de passe">N’a aucun mot de passe</option><option value="Installer des programmes">Installer des programmes</option><option value="Utilisateur standard">Utilisateur standard</option></select></div>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="17" data-type="radio" data-answer="Vrai">
+            <div class="question-title">Question 17/20 : Vrai ou Faux ? L'acronyme LAN signifie "Local Area Network".</div>
+            <div class="options">
+                <label><input type="radio" name="q17" value="Vrai"> Vrai</label>
+                <label><input type="radio" name="q17" value="Faux"> Faux</label>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="18" data-type="radio" data-answer="Topologie">
+            <div class="question-title">Question 18/20 : Le terme utilisé pour désigner la disposition géométrique des postes et des liaisons dans un réseau est la :</div>
+            <div class="options">
+                <label><input type="radio" name="q18" value="Configuration"> Configuration</label>
+                <label><input type="radio" name="q18" value="Topologie"> Topologie</label>
+                <label><input type="radio" name="q18" value="Infrastructure"> Infrastructure</label>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="19" data-type="radio" data-answer="MAN">
+            <div class="question-title">Question 19/20 : Quel réseau est utilisé pour relier des bâtiments ou plusieurs réseaux LAN au sein d'une ville ou d'un grand campus ?</div>
+            <div class="options">
+                <label><input type="radio" name="q19" value="LAN"> LAN</label>
+                <label><input type="radio" name="q19" value="MAN"> MAN</label>
+                <label><input type="radio" name="q19" value="WAN"> WAN</label>
+            </div>
+        </div>
+
+        <div class="question-section" data-id="20" data-type="fill-in-the-blank" data-answer="Box Internet,Modem,Routeur">
+            <div class="question-title">Question 20/20 : La Box "Tout-en-un" (Glisser-Déposer).</div>
+            <div class="drag-zone" id="drag-q20">
+                <div class="drag-word" draggable="true" data-word="Box Internet">Box Internet</div>
+                <div class="drag-word" draggable="true" data-word="Modem">Modem</div>
+                <div class="drag-word" draggable="true" data-word="Switch">Switch</div>
+                <div class="drag-word" draggable="true" data-word="Routeur">Routeur</div>
+            </div>
+            <p class="question-text-line">La solution la plus courante est la 
+                <span class="drop-target" data-correct-word="Box Internet"></span>, qui combine le 
+                <span class="drop-target" data-correct-word="Modem"></span> et le 
+                <span class="drop-target" data-correct-word="Routeur"></span> dans un seul boîtier.
+            </p>
+        </div>
+
+        <button type="submit" class="submit-all-btn">Terminer l'examen et enregistrer le résultat</button>
+
+    </form>
+
+    <div id="score-container">
+        <h2>Résultats de l'examen</h2>
+        <p>Votre score est de : <span id="final-score">0</span> / 20</p>
+        <div id="result-message"></div>
+        <p style="font-weight: bold; color: green;">Le fichier de résultat a été généré et téléchargé automatiquement.</p>
+        <div id="feedback-details" class="result-detail">
+            </div>
+    </div>
+</div>
+
+<div class="footer-note">
+    Réalisé par .El.M.Monir College : Atlas Fes
+</div>
+
+
+<script>
+    let dragged = null;
+    const questions = Array.from(document.querySelectorAll('.question-section'));
+    let examStarted = false; 
+    let studentInfo = {}; // Pour stocker les informations de l'étudiant
+
+    function normalizeText(text) {
+        // Normalisation pour rendre la comparaison insensible à la casse, aux accents et aux espaces superflus
+        return text.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
+    }
+
+    // --- Fonction de démarrage de l'examen (Étape 1) ---
+    function startQuiz() {
+        const nom = document.getElementById('student-name').value.trim();
+        const numEleve = document.getElementById('student-number').value;
+        const numClasse = document.getElementById('class-number').value;
+
+        if (!nom || nom.length < 3) {
+            alert("Veuillez saisir votre Nom et Prénom pour commencer.");
+            return;
+        }
+
+        // Stocker les informations initiales
+        studentInfo = {
+            nom: nom,
+            numEleve: numEleve,
+            numClasse: numClasse,
+            score: "N/A"
+        };
+        
+        // Lancement de l'examen
+        examStarted = true;
+        document.getElementById('registration-section').style.display = 'none';
+        document.getElementById('quiz-form').style.display = 'block';
+        alert(`Examen 'Réseau - Unité 1' commencé pour ${nom}. Bonne chance !`);
+    }
+
+    // --- Fonction pour télécharger un fichier (commun) ---
+    function downloadFile(content, fileName) {
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // --- Fonction de téléchargement du résultat (Étape 3 - Appelé automatiquement) ---
+    function downloadResultFile() {
+        const nom = studentInfo.nom;
+        const numEleve = studentInfo.numEleve;
+        const numClasse = studentInfo.numClasse;
+        const score = studentInfo.score;
+        const date = new Date().toLocaleDateString('fr-FR');
+        const heure = new Date().toLocaleTimeString('fr-FR');
+        
+        // Nettoyer le score pour le nom de fichier (ex: '15 sur 20')
+        const scoreForFilename = score.replace(/\//g, 'sur').replace(/ /g, '');
+
+        const resultData = 
+            `--- RÉSULTAT EXAMEN RÉSEAU - UNITÉ 1 ---\n` +
+            `Date de Soumission: ${date} à ${heure}\n\n` +
+            `Nom de l'élève: ${nom}\n` +
+            `Numéro de l'élève: ${numEleve}\n` +
+            `La Classe 3ASC-: ${numClasse}\n\n` +
+            `SCORE FINAL: ${score}\n` +
+            `-----------------------------------------\n` +
+            `DÉTAILS DES RÉPONSES (Voir la page du navigateur pour le détail complet).\n` +
+            `-----------------------------------------`;
+
+        // Créer un nom de fichier unique avec le score
+        const fileName = `RÉSULTAT_RESEAU_UNITE1_3ASC-${numClasse}_N°-${numEleve}_${nom.replace(/ /g, '_')}_${scoreForFilename}.txt`;
+
+        downloadFile(resultData, fileName);
+    }
+
+    // --- Fonction de soumission unique (Étape 2) ---
+    function submitQuiz() {
+        if (!examStarted) {
+            alert("Erreur : Veuillez d'abord commencer l'examen via la section d'inscription.");
+            return;
+        }
+        
+        // NOUVEAU: Confirmation avant la soumission finale et l'enregistrement
+        const confirmation = confirm("ATTENTION : En cliquant sur 'OK', vous terminez DÉFINITIVEMENT l'examen. Vous ne pourrez pas le refaire et votre score sera enregistré.\n\nVoulez-vous confirmer et terminer l'examen maintenant ?");
+
+        if (!confirmation) {
+            // L'élève a cliqué sur "Annuler", on arrête le processus.
+            return;
+        }
+
+        // --- PROCÉDURE DE CORRECTION ET D'ENREGISTREMENT ---
+        
+        let score = 0;
+        const feedbackDetails = document.getElementById('feedback-details');
+        feedbackDetails.innerHTML = '<h3>Détail des réponses :</h3>';
+
+        questions.forEach(section => {
+            const qId = parseInt(section.getAttribute('data-id'));
+            const type = section.getAttribute('data-type');
+            let isCorrect = false;
+            let feedback = `Q${qId} (${type}): `;
+
+            // Logique de correction (Non modifiée)
+            if (type === 'fill-in-the-blank') {
+                const correctAnswers = section.getAttribute('data-answer').split(',');
+                const dropTargets = section.querySelectorAll('.drop-target');
+                isCorrect = true;
+                let userMapping = [];
+
+                dropTargets.forEach((target, index) => {
+                    const filledWordElement = target.querySelector('.drag-word');
+                    const correctWord = normalizeText(correctAnswers[index]);
+                    
+                    if (filledWordElement) {
+                        const filledWord = normalizeText(filledWordElement.getAttribute('data-word'));
+                        userMapping.push(filledWordElement.getAttribute('data-word'));
+                        if (filledWord !== correctWord) {
+                            isCorrect = false;
+                        }
+                    } else {
+                        userMapping.push('[VIDE]');
+                        isCorrect = false;
+                    }
+                });
+                
+                feedback += isCorrect ? '✅ Correct' : '❌ Incorrect' ;
+                
+                if (!isCorrect) {
+                     feedback += ` - Votre réponse : ${userMapping.join(' / ')}. Réponse attendue : <span class="correct-answer-highlight">${correctAnswers.join(' / ')}</span>`;
+                }
+
+            } else if (type === 'radio') {
+                const correctAnswer = normalizeText(section.getAttribute('data-answer'));
+                const selectedOption = section.querySelector(`input[name="q${qId}"]:checked`);
+                const userAnswer = selectedOption ? selectedOption.value : '[NON COCHÉ]';
+                
+                isCorrect = selectedOption && normalizeText(selectedOption.value) === correctAnswer;
+                feedback += isCorrect ? '✅ Correct' : '❌ Incorrect' ;
+
+                if (!isCorrect) {
+                    feedback += ` - Vous avez coché : <span class="incorrect-answer-highlight">${userAnswer}</span>. Réponse correcte : <span class="correct-answer-highlight">${section.getAttribute('data-answer')}</span>.`;
+                }
+
+            } else if (type === 'checkbox') {
+                const correctAnswers = section.getAttribute('data-answer').split(',').map(normalizeText).sort();
+                const selectedOptions = Array.from(section.querySelectorAll(`input[name="q${qId}"]:checked`))
+                    .map(input => normalizeText(input.value)).sort();
+                
+                isCorrect = correctAnswers.length === selectedOptions.length && 
+                            correctAnswers.every((val, index) => val === selectedOptions[index]);
+
+                feedback += isCorrect ? '✅ Correct' : '❌ Incorrect' ;
+
+                if (!isCorrect) {
+                    const userValues = Array.from(section.querySelectorAll(`input[name="q${qId}"]:checked`)).map(input => input.value);
+                    feedback += ` - Vos choix : <span class="incorrect-answer-highlight">${userValues.length > 0 ? userValues.join(', ') : '[AUCUN]'}</span>. Réponse(s) correcte(s) : <span class="correct-answer-highlight">${section.getAttribute('data-answer')}</span>.`;
+                }
+
+            } else if (type === 'matching') {
+                const correctMappings = section.getAttribute('data-answer').split(',').map(m => m.split('-'));
+                isCorrect = true;
+                let userMapping = {};
+                
+                correctMappings.forEach(([term, def]) => {
+                    const select = section.querySelector(`[data-term-target="${term}"]`);
+                    userMapping[term] = select ? select.value : '[VIDE]';
+                    if (select && select.value !== def) {
+                        isCorrect = false;
+                    }
+                });
+
+                feedback += isCorrect ? '✅ Correct' : '❌ Incorrect' ;
+
+                if (!isCorrect) {
+                    feedback += ' - Association incorrecte. ';
+                    correctMappings.forEach(([term, def]) => {
+                         const userDef = userMapping[term];
+                         const highlightClass = userDef === def ? 'correct-answer-highlight' : 'incorrect-answer-highlight';
+                         feedback += `<br> &nbsp; &nbsp; ${term} -> <span class="${highlightClass}">${userDef}</span> (Attendu: ${def})`;
+                    });
+                }
+            }
+
+            if (isCorrect) {
+                score++;
+            }
+            
+            feedbackDetails.innerHTML += `<p>${feedback}</p>`;
+
+            // Désactiver tous les champs après la soumission
+            section.querySelectorAll('input, select, .drag-word').forEach(el => {
+                el.disabled = true;
+                if (el.classList.contains('drag-word')) el.draggable = false;
+            });
+            section.style.backgroundColor = isCorrect ? '#dff0d8' : '#f8d7da';
+
+        });
+
+        // 1. Mise à jour du score dans les données de l'élève
+        studentInfo.score = score + ' / 20';
+        
+        // 2. TÉLÉCHARGEMENT AUTOMATIQUE du fichier de résultat
+        downloadResultFile();
+
+        // 3. Affichage final du score
+        document.getElementById('final-score').textContent = score;
+        const resultMessage = document.getElementById('result-message');
+        
+        if (score === 20) {
+            resultMessage.innerHTML = `<p style="color: green; font-weight: bold;">Félicitations ! Parfait (20/20) !</p>`;
+        } else if (score >= 15) {
+            resultMessage.innerHTML = `<p style="color: darkgreen; font-weight: bold;">Très bien ! Vous maîtrisez presque tous les concepts de réseau.</p>`;
+        } else if (score >= 10) {
+            resultMessage.innerHTML = `<p style="color: orange; font-weight: bold;">Passable. Revoyez les sections Réseau signalées par le "❌".</p>`;
+        } else {
+            resultMessage.innerHTML = `<p style="color: red; font-weight: bold;">Insuffisant. Revoyez attentivement votre cours sur les réseaux.</p>`;
+        }
+        
+        document.getElementById('score-container').style.display = 'block';
+        document.querySelector('.submit-all-btn').disabled = true;
+        
+        // Afficher un message de confirmation
+        alert(`Examen Terminé !\nVotre score est de ${score} sur 20.\nLe fichier de résultat a été automatiquement généré et téléchargé.`);
+    }
+
+
+    // --- Fonctions de Drag and Drop (Glisser-Déposer) ---
+    function handleDragStart(e) {
+        if (!examStarted || e.target.disabled) return; 
+        dragged = e.target;
+        e.dataTransfer.setData('text/plain', e.target.getAttribute('data-word'));
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault(); 
+        if (!examStarted) return; 
+        if (e.target.classList.contains('drop-target') && !e.target.querySelector('.drag-word')) {
+            e.target.classList.add('hover');
+        }
+    }
+
+    function handleDragLeave(e) {
+        if (!examStarted) return; 
+        if (e.target.classList.contains('drop-target')) {
+            e.target.classList.remove('hover');
+        }
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        if (!examStarted) return; 
+        
+        const dropTarget = e.target;
+        if (!dragged || dragged.disabled) return; 
+
+        // Déposer sur une cible VIDE
+        if (dropTarget.classList.contains('drop-target') && !dropTarget.querySelector('.drag-word')) {
+            dropTarget.classList.remove('hover');
+            dropTarget.classList.add('filled');
+            
+            // Placer le mot dans la cible
+            dropTarget.appendChild(dragged);
+
+        // Déposer sur la zone de mots (pour remettre le mot)
+        } else if (dropTarget.closest('.drag-zone')) {
+            const dragZone = dropTarget.closest('.drag-zone');
+            const currentDropTarget = dragged.parentElement;
+            
+            dragZone.appendChild(dragged);
+
+            if (currentDropTarget && currentDropTarget.classList.contains('drop-target')) {
+                currentDropTarget.classList.remove('filled');
+            }
+        }
+    }
+
+    // Initialisation des événements
+    document.addEventListener('DOMContentLoaded', () => {
+        // Appliquer les événements Drag and Drop
+        document.querySelectorAll('.drag-word').forEach(word => {
+            word.addEventListener('dragstart', handleDragStart);
+            word.addEventListener('dragend', () => dragged = null); 
+        });
+
+        document.querySelectorAll('.drop-target').forEach(target => {
+            target.addEventListener('dragover', handleDragOver);
+            target.addEventListener('dragleave', handleDragLeave);
+            target.addEventListener('drop', handleDrop);
+        });
+
+        document.querySelectorAll('.drag-zone').forEach(zone => {
+            zone.addEventListener('dragover', handleDragOver);
+            zone.addEventListener('drop', handleDrop);
+        });
+    });
+</script>
+
+</body>
+</html>
